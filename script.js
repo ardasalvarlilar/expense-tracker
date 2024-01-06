@@ -14,6 +14,29 @@ const dummy_transactions = [
 ]
 let transactions = dummy_transactions
 
+function add_transaction(e){
+  e.preventDefault()
+
+  if(text.value.trim() === '' || amount.value.trim() === ''){
+    alert('please add a text and amount')
+  }else{
+    const transaction = {
+      id: generate_id(),
+      text: text.value,
+      amount: +amount.value
+    }
+    transactions.push(transaction)
+    add_transaction_dom(transaction)
+    update_values()
+    text.value=''
+    amount.value=''
+  }
+}
+
+function generate_id(){
+  return Math.floor(Math.random() * 100000000)
+}
+
 // add transactions to dom list
 
 function add_transaction_dom(transaction){
@@ -21,7 +44,7 @@ function add_transaction_dom(transaction){
   const sign = transaction.amount < 0 ? '-' : '+'
   const item = document.createElement('li')
   item.classList.add(transaction.amount < 0 ? 'minus' : 'plus')
-  item.innerHTML = `${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span> <button class="delete-btn">z</button>`
+  item.innerHTML = `${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span> <button class="delete-btn" onclick='remove_transaction(${transaction.id})'>z</button>`
   list.appendChild(item)
 }
 
@@ -35,9 +58,16 @@ function update_values(){
   money_minus.innerText = `$${expense}`
 }
 
+function remove_transaction(id){
+  transactions = transactions.filter(transaction => transaction.id != id)
+  init()
+}
+
 function init(){
   list.innerHTML = ''
   transactions.forEach(add_transaction_dom)
   update_values()
 }
 init()
+
+form.addEventListener('submit',add_transaction)
