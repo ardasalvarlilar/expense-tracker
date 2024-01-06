@@ -6,13 +6,14 @@ const form = document.getElementById('form')
 const text = document.getElementById('text')
 const amount = document.getElementById('amount')
 
-const dummy_transactions = [
-  {id:1, text:'Flower',amount: -20},
-  {id:2, text:'Salary',amount: 300},
-  {id:3, text:'Book',amount: -10},
-  {id:4, text:'Camera',amount: 150},
-]
-let transactions = dummy_transactions
+// const dummy_transactions = [
+//   {id:1, text:'Flower',amount: -20},
+//   {id:2, text:'Salary',amount: 300},
+//   {id:3, text:'Book',amount: -10},
+//   {id:4, text:'Camera',amount: 150},
+// ]
+const locale_storage_transactions = JSON.parse(localStorage.getItem('transactions'))
+let transactions = localStorage.getItem('transactions') !== null ? locale_storage_transactions : []
 
 function add_transaction(e){
   e.preventDefault()
@@ -28,6 +29,7 @@ function add_transaction(e){
     transactions.push(transaction)
     add_transaction_dom(transaction)
     update_values()
+    update_locale_storage()
     text.value=''
     amount.value=''
   }
@@ -44,7 +46,7 @@ function add_transaction_dom(transaction){
   const sign = transaction.amount < 0 ? '-' : '+'
   const item = document.createElement('li')
   item.classList.add(transaction.amount < 0 ? 'minus' : 'plus')
-  item.innerHTML = `${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span> <button class="delete-btn" onclick='remove_transaction(${transaction.id})'>z</button>`
+  item.innerHTML = `${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span> <button class="delete-btn" onclick='remove_transaction(${transaction.id})'>x</button>`
   list.appendChild(item)
 }
 
@@ -60,7 +62,11 @@ function update_values(){
 
 function remove_transaction(id){
   transactions = transactions.filter(transaction => transaction.id != id)
+  update_locale_storage()
   init()
+}
+function update_locale_storage(){
+  localStorage.setItem('transactions',JSON.stringify(transactions))
 }
 
 function init(){
